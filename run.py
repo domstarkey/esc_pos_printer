@@ -55,6 +55,6 @@ def print_news():
 
 # Execute the print job
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=False, host='0.0.0.0')
     #print_news()
 
