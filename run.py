@@ -8,7 +8,7 @@ from dotenv import load_dotenv, dotenv_values
 from pprint import pprint
 from flask import Flask, redirect, request, session, url_for, jsonify
 load_dotenv()
-import yfinance as yf
+#import yfinance as yf
 
 # Step 1: Parse the RSS feed
 RSS_FEED_URL = 'https://www.rnz.de/feed/139-RL_Heidelberg_free.xml'
