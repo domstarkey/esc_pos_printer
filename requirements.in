@@ -3,3 +3,4 @@ python-escpos
 requests 
 python-dotenv
 flask
+yfinance==0.2.43

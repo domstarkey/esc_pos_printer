@@ -8,6 +8,8 @@ appdirs==1.4.4
     # via python-escpos
 argcomplete==3.5.0
     # via python-escpos
+beautifulsoup4==4.12.3
+    # via yfinance
 blinker==1.8.2
     # via flask
 certifi==2024.8.30
@@ -20,6 +22,10 @@ feedparser==6.0.11
     # via -r requirements.in
 flask==3.0.3
     # via -r requirements.in
+frozendict==2.4.4
+    # via yfinance
+html5lib==1.1
+    # via yfinance
 idna==3.10
     # via requests
 importlib-metadata==8.5.0
@@ -30,46 +36,69 @@ itsdangerous==2.2.0
     # via flask
 jinja2==3.1.4
     # via flask
+lxml==5.3.0
+    # via yfinance
 markupsafe==2.1.5
     # via
     #   jinja2
     #   werkzeug
+multitasking==0.0.11
+    # via yfinance
+numpy==2.0.2
+    # via
+    #   pandas
+    #   yfinance
+pandas==2.2.3
+    # via yfinance
+peewee==3.17.6
+    # via yfinance
 pillow==10.4.0
     # via python-escpos
+platformdirs==4.3.6
+    # via yfinance
 pypng==0.20220715.0
     # via qrcode
 python-barcode==0.15.1
     # via python-escpos
+python-dateutil==2.9.0.post0
+    # via pandas
 python-dotenv==1.0.1
     # via -r requirements.in
 python-escpos==3.1
     # via -r requirements.in
-pytz==2021.1
-    # via ticktick-py
+pytz==2024.2
+    # via
+    #   pandas
+    #   yfinance
 pyyaml==6.0.2
     # via python-escpos
 qrcode==7.4.2
     # via python-escpos
-regex==2021.4.4
-    # via ticktick-py
-requests==2.26.0
+requests==2.32.3
     # via
     #   -r requirements.in
-    #   ticktick-py
+    #   yfinance
 sgmllib3k==1.0.0
     # via feedparser
 six==1.16.0
-    # via python-escpos
-ticktick-py==2.0.3
-    # via -r requirements.in
+    # via
+    #   html5lib
+    #   python-dateutil
+    #   python-escpos
+soupsieve==2.6
+    # via beautifulsoup4
 typing-extensions==4.12.2
     # via qrcode
+tzdata==2024.2
+    # via pandas
 urllib3==1.26.7
-    # via
-    #   requests
-    #   ticktick-py
+    # via requests
+webencodings==0.5.1
+    # via html5lib
 werkzeug==3.0.4
     # via flask
+yfinance==0.2.43
+    # via -r requirements.in
 zipp==3.20.2
     # via
     #   importlib-metadata
