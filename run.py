@@ -49,6 +49,7 @@ def print_news():
 
         print_rss_feed(printer = printer, caption= 'Tagesschau', rss_feed_url='https://www.tagesschau.de/inland/index~rss2.xml', _count = 3)
 
+        print_basecamp_tasks(printer= printer)
 
         # Step 4: Cut the paper
         printer.cut()
@@ -104,35 +105,72 @@ def get_ticktick_accesstoken():
 
     return access_token
 
-def get_basecamp_tasks():
-    access_token, account_id = get_basecamp_access_token_accountid()
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-        'User-Agent': 'ESCPrinter (daniel@dakoller.net)',
-    }
+def print_basecamp_tasks(printer):
+    try:
+        access_token, account_id = get_basecamp_access_token_accountid()
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'User-Agent': 'ESCPrinter (daniel@dakoller.net)',
+        }
 
-    # get projects
-    projects = requests.get(f'https://3.basecampapi.com/{account_id}/projects.json', headers=headers).json()
+        #pprint(account_id)
+        _tasks = []
 
-    for project in projects:
-        #pprint(project)
-        project_id = project['id']
+        # get projects
+        projects = requests.get(f'https://3.basecampapi.com/{account_id}/projects.json', headers=headers).json()
 
-        # get todo set id
-        todoset_id = None
-        for item in project['dock']:
-            if item['name'] == 'todoset':
-                todoset_id = item['id']
+        for project in projects:
+            #pprint(project)
+            project_id = project['id']
 
-        todolists = requests.get(f'https://3.basecampapi.com/{account_id}/buckets/{project_id}/todosets/{todoset_id}/todolists.json', headers=headers).json()
-        for todolist in todolists:
-            pprint(todolist)
-            todolist_id = todolist['id']
+            # get todo set id
+            todoset_id = None
+            for item in project['dock']:
+                if item['name'] == 'todoset':
+                    todoset_id = item['id']
 
-            # get tasks finally
-            tasks = requests.get(f'https://3.basecampapi.com/{account_id}/buckets/{project_id}/todolists/{todolist_id}/todos.json',headers=headers)
-            pprint(tasks)
-    
+            todolists = requests.get(f'https://3.basecampapi.com/{account_id}/buckets/{project_id}/todosets/{todoset_id}/todolists.json', headers=headers).json()
+            for todolist in todolists:
+                #pprint(todolist)
+                todolist_id = todolist['id']
+
+                # get tasks finally
+                tasks = requests.get(f'https://3.basecampapi.com/{account_id}/buckets/{project_id}/todolists/{todolist_id}/todos.json',headers=headers).json()
+                #pprint(tasks)
+
+                for task in tasks:
+                    if task['assignees'] != []:
+                        for assignee in task['assignees']:
+                            if assignee['id'] == int(os.getenv('BASECAMP_OWN_ACCOUNT_ID')):
+                                _tasks.append({
+                                    'project': task['bucket']['name'],
+                                    'content': task['content'],
+                                    'due_date': task['due_on'],
+                                    'status': task['status'],
+                                    'url': task['app_url'],
+                                })
+        #exit(0)
+        if len(_tasks) > 0:
+
+            printer.set(bold= True,normal_textsize=True)
+            printer.text(f"Basecamp-Tasks:\n")
+            printer.set(bold= False,normal_textsize=True)
+            #printer.text(f"{description}\n")
+            #printer.text("\n---\n\n")
+
+            for task in _tasks:
+                printer.set(bold= True,normal_textsize=True)
+                printer.text(f"{task['content']} ")
+                printer.set(bold= False,normal_textsize=True)
+                printer.text(f"from {task['project']}\n")
+                printer.set(bold= True,normal_textsize=True)
+                printer.text(f"{task['due_date']}\n")
+                printer.set(bold= False,normal_textsize=True)
+                printer.qr(task['url'],size=5)
+                printer.text("\n---\n\n")
+
+    except Exception as e:
+        print(e)
 
 def get_ticktick_tasks():
     access_token = get_ticktick_accesstoken()
@@ -208,10 +246,10 @@ def ticktick_callback():
 # Execute the print job
 if __name__ == '__main__':
     #pprint(f"Basecamp oAuth Link:  https://launchpad.37signals.com/authorization/new?type=web_server&client_id={ os.getenv('BASECAMP_CLIENT_ID') }&redirect_uri={ os.getenv( 'BASECAMP_CALLBACK_URL' )}")
-    pprint(f"Ticktick: https://ticktick.com/oauth/authorize?client_id={ os.getenv('TICKTICK_CLIENT_ID')}&scope=tasks:read&redirect_uri={os.getenv('TICKTICK_REDIRECT_URI')}&response_type=code")
-    #app.run(debug=True, host='0.0.0.0', port=5001)
+    #pprint(f"Ticktick: https://ticktick.com/oauth/authorize?client_id={ os.getenv('TICKTICK_CLIENT_ID')}&scope=tasks:read&redirect_uri={os.getenv('TICKTICK_REDIRECT_URI')}&response_type=code")
+    app.run(debug=True, host='0.0.0.0', port=5000)
     #print_news()
-    #get_basecamp_tasks()
+    #pprint(get_basecamp_tasks())
     #get_ticktick_tasks()
-    get_ticktick_api()
+    #get_ticktick_api()
 

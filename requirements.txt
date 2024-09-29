@@ -69,14 +69,18 @@ python-escpos==3.1
 pytz==2024.2
     # via
     #   pandas
+    #   ticktick-py
     #   yfinance
 pyyaml==6.0.2
     # via python-escpos
 qrcode==7.4.2
     # via python-escpos
+regex==2024.9.11
+    # via ticktick-py
 requests==2.32.3
     # via
     #   -r requirements.in
+    #   ticktick-py
     #   yfinance
 sgmllib3k==1.0.0
     # via feedparser
@@ -87,6 +91,8 @@ six==1.16.0
     #   python-escpos
 soupsieve==2.6
     # via beautifulsoup4
+ticktick-py==2.0.0
+    # via -r requirements.in
 typing-extensions==4.12.2
     # via qrcode
 tzdata==2024.2
