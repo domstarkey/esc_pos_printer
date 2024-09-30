@@ -11,6 +11,9 @@ load_dotenv()
 import json
 from datetime import date
 import random
+from ticktick.oauth2 import OAuth2        # OAuth2 Manager
+from ticktick.api import TickTickClient   # Main Interface
+import datetime
 
 # Step 2: Connect to the ESC/POS printer
 printer_ip = '192.168.2.134'
@@ -150,6 +153,9 @@ def print_basecamp_tasks(printer):
             'User-Agent': 'ESCPrinter (daniel@dakoller.net)',
         }
 
+        if printer == None:
+            printer = Network(printer_ip)
+
         #pprint(account_id)
         _tasks = []
 
@@ -212,14 +218,20 @@ def print_basecamp_tasks(printer):
 def get_ticktick_tasks():
     access_token = get_ticktick_accesstoken()
 
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-    }
+    try:
 
-    r = requests.get(f"https://api.ticktick.com/api/v2/project/all/completedInAll", headers=headers)
-    resp = r.text
+        auth_client = OAuth2(client_id=os.getenv("TICKTICK_CLIENT_ID"),
+                        client_secret=os.getenv("TICKTICK_CLIENT_SECRET"),
+                        redirect_uri=os.getenv("TICKTICK_REDIRECT_URI"))
 
-    pprint(resp)
+        client = TickTickClient(os.getenv("TICKTICK_USERNAME"), os.getenv("TICKTICK_PASSWORD"), auth_client)
+
+        pprint(client.state['tasks'])
+
+
+    except Exception as e:
+        pprint(e)
+
 
 def get_ticktick_api():
     access_token = get_ticktick_accesstoken()
@@ -286,7 +298,7 @@ if __name__ == '__main__':
     #pprint(f"Ticktick: https://ticktick.com/oauth/authorize?client_id={ os.getenv('TICKTICK_CLIENT_ID')}&scope=tasks:read&redirect_uri={os.getenv('TICKTICK_REDIRECT_URI')}&response_type=code")
     app.run(debug=True, host='0.0.0.0', port=5000)
     #print_news()
-    #pprint(get_basecamp_tasks())
+    #pprint(print_basecamp_tasks(None))
     #get_ticktick_tasks()
     #get_ticktick_api()
     #print_daily_basics(None)

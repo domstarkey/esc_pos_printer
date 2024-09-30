@@ -8,6 +8,7 @@ __pycache__/
 
 .bc_token
 .tt_token
+.token-oauth
 
 # Distribution / packaging
 .Python
