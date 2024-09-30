@@ -9,6 +9,8 @@ from pprint import pprint
 from flask import Flask, redirect, request, session, url_for, jsonify
 load_dotenv()
 import json
+from datetime import date
+import random
 
 # Step 2: Connect to the ESC/POS printer
 printer_ip = '192.168.2.134'
@@ -44,18 +46,47 @@ def print_news():
     try:
         printer= Network(printer_ip)
         # Print the feed title
+        print_daily_basics(printer= printer)
+
+        print_basecamp_tasks(printer= printer)
+
         #printer.set(align='center', bold=True, double_height=True)
         print_rss_feed(printer = printer, caption = 'Heidelberg News', rss_feed_url='https://www.rnz.de/feed/139-RL_Heidelberg_free.xml', _count = 3)
 
         print_rss_feed(printer = printer, caption= 'Tagesschau', rss_feed_url='https://www.tagesschau.de/inland/index~rss2.xml', _count = 3)
 
-        print_basecamp_tasks(printer= printer)
+        
 
         # Step 4: Cut the paper
         printer.cut()
         return jsonify({"status": "success", "message": "Printed successfully!"}), 200
     except Exception as e:
         return jsonify({"status": "error", "message": "Failed to print."}), 500
+
+def print_daily_basics(printer):
+
+    try:
+        if printer == None:
+            printer = Network(printer_ip)
+
+        today = date.today()
+
+        printer.set(double_width=True, double_height=True, align='center',bold=True)
+        printer.text(f"{ today.strftime('%A %x')}\n\n")
+        printer.set(double_width=False, double_height=False, align='center',bold=False, normal_textsize= True)
+
+        sunset = requests.get("https://api.sunrise-sunset.org/json?lat=49.3988&lng=8.6724&date=today&tzid=Europe/Berlin").json()
+
+        printer.text(f"{ sunset['results']['sunrise'] } - { sunset['results']['sunset']}\n")
+
+        printer.set(double_width=True, double_height=True, align='center')
+        printer.text(f'# { random.randint(1,53) }\n')
+        printer.set(double_width=False, double_height=False, align='center', normal_textsize=True)
+
+        printer.set(align='left')
+
+    except Exception as e:
+        pprint(e)
 
 def get_basecamp_access_token_accountid():
 
@@ -258,4 +289,5 @@ if __name__ == '__main__':
     #pprint(get_basecamp_tasks())
     #get_ticktick_tasks()
     #get_ticktick_api()
+    #print_daily_basics(None)
 
