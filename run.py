@@ -62,7 +62,7 @@ def get_basecamp_access_token_accountid():
     access_token = None
 
     with open('.bc_token','r') as f:
-        access_token = f.read()
+        access_token = f.read().replace('\n','')
 
     if not access_token:
         print('Access token not there.')
@@ -87,7 +87,7 @@ def get_ticktick_accesstoken():
     access_token = None
 
     with open('.tt_token','r') as f:
-        access_token = f.read()
+        access_token = f.read().replace('\n','')
 
     if not access_token:
         print('Access token not there.')
