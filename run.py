@@ -61,27 +61,33 @@ def get_basecamp_access_token_accountid():
 
     access_token = None
 
-    with open('.bc_token','r') as f:
-        access_token = f.read().replace('\n','')
+    try:
 
-    if not access_token:
-        print('Access token not there.')
-        exit(1)
+        with open('.bc_token','r') as f:
+            access_token = f.read().replace('\n','')
 
-    # get account id
-    headers = {
-        'Authorization': f'Bearer {access_token}',
-        'User-Agent': 'ESCPrinter (daniel@dakoller.net)',
-    }
-    r = requests.get('https://launchpad.37signals.com/authorization.json',headers= headers)
-    resp = r.json()
-    # look for bc3 product
-    account_id = None
-    for item in resp['accounts']:
-        if item['product'] == 'bc3':
-            account_id = item['id']
+        if not access_token:
+            print('Access token not there.')
+            exit(1)
 
-    return access_token, account_id
+        # get account id
+        headers = {
+            'Authorization': f'Bearer {access_token}',
+            'User-Agent': 'ESCPrinter (daniel@dakoller.net)',
+        }
+        r = requests.get('https://launchpad.37signals.com/authorization.json',headers= headers)
+        resp = r.json()
+        pprint(resp)
+        # look for bc3 product
+        account_id = None
+        for item in resp['accounts']:
+            if item['product'] == 'bc3':
+                account_id = item['id']
+
+        return access_token, account_id
+    except Exception as e:
+        pprint(e)
+        return None,None
 
 def get_ticktick_accesstoken():
     access_token = None
