@@ -296,7 +296,7 @@ def ticktick_callback():
 if __name__ == '__main__':
     #pprint(f"Basecamp oAuth Link:  https://launchpad.37signals.com/authorization/new?type=web_server&client_id={ os.getenv('BASECAMP_CLIENT_ID') }&redirect_uri={ os.getenv( 'BASECAMP_CALLBACK_URL' )}")
     #pprint(f"Ticktick: https://ticktick.com/oauth/authorize?client_id={ os.getenv('TICKTICK_CLIENT_ID')}&scope=tasks:read&redirect_uri={os.getenv('TICKTICK_REDIRECT_URI')}&response_type=code")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=False, host='0.0.0.0', port=5000)
     #print_news()
     #pprint(print_basecamp_tasks(None))
     #get_ticktick_tasks()
