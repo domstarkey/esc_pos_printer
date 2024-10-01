@@ -51,6 +51,8 @@ def print_news():
         # Print the feed title
         print_daily_basics(printer= printer)
 
+        print_daily_quote(printer = printer)
+
         print_basecamp_tasks(printer= printer)
 
         #printer.set(align='center', bold=True, double_height=True)
@@ -292,6 +294,23 @@ def ticktick_callback():
 
     return jsonify({"status": "success", "message": "Callback received!"}), 200
 
+def print_daily_quote(printer):
+    try:
+        if printer == None:
+            printer= Network(printer_ip)
+
+        r = requests.get('https://zenquotes.io/api/today').json()[0]
+
+        printer.set(bold= True,double_width=True,align='center')
+        printer.text(f"\n\n{ r['q'] }\n")
+        printer.set(bold= False,normal_textsize=True, align='center')
+        printer.text(f"\n{ r['a'] }\n\n")
+        printer.set(bold= False,normal_textsize=True, align='left')
+        #pprint(r)
+
+    except Exception as e:
+        pprint(e)
+
 # Execute the print job
 if __name__ == '__main__':
     #pprint(f"Basecamp oAuth Link:  https://launchpad.37signals.com/authorization/new?type=web_server&client_id={ os.getenv('BASECAMP_CLIENT_ID') }&redirect_uri={ os.getenv( 'BASECAMP_CALLBACK_URL' )}")
@@ -302,4 +321,5 @@ if __name__ == '__main__':
     #get_ticktick_tasks()
     #get_ticktick_api()
     #print_daily_basics(None)
+    #print_daily_quote(None)
 
