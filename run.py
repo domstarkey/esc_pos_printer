@@ -68,6 +68,35 @@ def print_news():
     except Exception as e:
         return jsonify({"status": "error", "message": "Failed to print."}), 500
 
+@app.route('/print_text')
+def print_text():
+    try:
+        headline = request.args.get('headline')
+    except:
+        headline = None
+
+    try:
+        text = request.args.get('text')
+    except:
+        text = None
+
+    try:
+        printer = Network(printer_ip)
+
+        if headline:
+            printer.set(double_width=True, double_height=True, align='center',bold=True)
+            printer.text(f"{ headline }\n\n")
+            printer.set(double_width=False, double_height=False, align='center',bold=False, normal_textsize= True)
+
+        if text:    
+            printer.text(f"{ text }\n\n")
+
+        printer.cut()
+        return jsonify({"status": "success", "message": "Printed successfully!"}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": f"Failed to print. ({str(e)})"}), 500
+    
+
 def print_daily_basics(printer):
 
     try:
