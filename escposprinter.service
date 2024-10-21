@@ -1,0 +1,14 @@
+[Unit]
+Description=escposprinter
+After=syslog.target network.target
+
+[Service]
+Type=simple
+User=dakoller
+WorkingDirectory=/home/dakoller/esc_pos_printer
+ExecStart=/home/dakoller/esc_pos_printer/venv/bin/python /home/dakoller/esc_pos_printer/run.py
+Restart=always
+RuntimeMaxSec=5m
+
+[Install]
+WantedBy=multi-user.target
