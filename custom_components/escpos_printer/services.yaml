@@ -41,4 +41,41 @@ print_simple:
 discover_printers:
   name: Discover Printers
   description: Scan the network for ESC/POS printers
-  fields: {} 
+  fields: {}
+
+add_printer:
+  name: Add Printer
+  description: Add a new ESC/POS printer
+  fields:
+    name:
+      name: Printer Name
+      description: Name for the printer
+      required: true
+      selector:
+        text:
+    host:
+      name: Host/IP Address
+      description: IP address or hostname of the printer
+      required: true
+      selector:
+        text:
+    port:
+      name: Port
+      description: Port number (default: 9100)
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 65535
+          mode: box
+
+remove_printer:
+  name: Remove Printer
+  description: Remove an ESC/POS printer
+  fields:
+    name:
+      name: Printer Name
+      description: Name of the printer to remove
+      required: true
+      selector:
+        text: 

@@ -23,9 +23,19 @@ _LOGGER = logging.getLogger(__name__)
 DOMAIN = "escpos_printer"
 CONF_DISCOVERY_ENABLED = "discovery_enabled"
 CONF_DISCOVERY_TIMEOUT = "discovery_timeout"
+CONF_PRINTERS = "printers"
 
 DEFAULT_PORT = 9100
 DEFAULT_DISCOVERY_TIMEOUT = 5
+
+# Printer configuration schema
+PRINTER_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_NAME): cv.string,
+        vol.Required(CONF_HOST): cv.string,
+        vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.port,
+    }
+)
 
 CONFIG_SCHEMA = vol.Schema(
     {
@@ -33,6 +43,9 @@ CONFIG_SCHEMA = vol.Schema(
             {
                 vol.Optional(CONF_DISCOVERY_ENABLED, default=True): cv.boolean,
                 vol.Optional(CONF_DISCOVERY_TIMEOUT, default=DEFAULT_DISCOVERY_TIMEOUT): cv.positive_int,
+                vol.Optional(CONF_PRINTERS, default=[]): vol.All(
+                    cv.ensure_list, [PRINTER_SCHEMA]
+                ),
             }
         )
     },
@@ -42,6 +55,8 @@ CONFIG_SCHEMA = vol.Schema(
 SERVICE_PRINT_TEXT = "print_text"
 SERVICE_PRINT_SIMPLE = "print_simple"
 SERVICE_DISCOVER_PRINTERS = "discover_printers"
+SERVICE_ADD_PRINTER = "add_printer"
+SERVICE_REMOVE_PRINTER = "remove_printer"
 
 PRINT_TEXT_SCHEMA = vol.Schema(
     {
@@ -60,6 +75,20 @@ PRINT_SIMPLE_SCHEMA = vol.Schema(
 
 DISCOVER_PRINTERS_SCHEMA = vol.Schema({})
 
+ADD_PRINTER_SCHEMA = vol.Schema(
+    {
+        vol.Required("name"): cv.string,
+        vol.Required("host"): cv.string,
+        vol.Optional("port", default=DEFAULT_PORT): cv.port,
+    }
+)
+
+REMOVE_PRINTER_SCHEMA = vol.Schema(
+    {
+        vol.Required("name"): cv.string,
+    }
+)
+
 
 class PrinterManager:
     """Manages ESC/POS printers and their connections."""
@@ -68,6 +97,20 @@ class PrinterManager:
         self.hass = hass
         self.printers: Dict[str, Dict] = {}
         self.discovered_printers: List[Dict] = []
+
+    def load_printers_from_config(self, printers_config: List[Dict]) -> None:
+        """Load printers from configuration."""
+        for printer_config in printers_config:
+            name = printer_config[CONF_NAME]
+            host = printer_config[CONF_HOST]
+            port = printer_config.get(CONF_PORT, DEFAULT_PORT)
+            
+            self.printers[name] = {
+                "host": host,
+                "port": port,
+                "name": name,
+            }
+            _LOGGER.info(f"Loaded printer from config: {name} at {host}:{port}")
 
     def add_printer(self, name: str, host: str, port: int = DEFAULT_PORT) -> bool:
         """Add a new printer."""
@@ -251,6 +294,10 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
     config_data = config[DOMAIN]
     printer_manager = PrinterManager(hass)
 
+    # Load printers from configuration
+    printers_config = config_data.get(CONF_PRINTERS, [])
+    printer_manager.load_printers_from_config(printers_config)
+
     # Store the printer manager in hass data
     hass.data[DOMAIN] = {
         "printer_manager": printer_manager,
@@ -295,10 +342,36 @@ async def async_setup(hass: HomeAssistant, config: ConfigType) -> bool:
         discovered = printer_manager.discover_printers(timeout)
         _LOGGER.info(f"Discovery complete. Found {len(discovered)} printers")
 
+    async def add_printer_service(call: ServiceCall) -> None:
+        """Service to add a printer."""
+        name = call.data.get("name")
+        host = call.data.get("host")
+        port = call.data.get("port", DEFAULT_PORT)
+
+        if not name or not host:
+            raise HomeAssistantError("Name and host are required")
+
+        success = printer_manager.add_printer(name, host, port)
+        if not success:
+            raise HomeAssistantError("Failed to add printer")
+
+    async def remove_printer_service(call: ServiceCall) -> None:
+        """Service to remove a printer."""
+        name = call.data.get("name")
+
+        if not name:
+            raise HomeAssistantError("Name is required")
+
+        success = printer_manager.remove_printer(name)
+        if not success:
+            raise HomeAssistantError("Printer not found")
+
     # Register services
     hass.services.async_register(DOMAIN, SERVICE_PRINT_TEXT, print_text_service, schema=PRINT_TEXT_SCHEMA)
     hass.services.async_register(DOMAIN, SERVICE_PRINT_SIMPLE, print_simple_service, schema=PRINT_SIMPLE_SCHEMA)
     hass.services.async_register(DOMAIN, SERVICE_DISCOVER_PRINTERS, discover_printers_service, schema=DISCOVER_PRINTERS_SCHEMA)
+    hass.services.async_register(DOMAIN, SERVICE_ADD_PRINTER, add_printer_service, schema=ADD_PRINTER_SCHEMA)
+    hass.services.async_register(DOMAIN, SERVICE_REMOVE_PRINTER, remove_printer_service, schema=REMOVE_PRINTER_SCHEMA)
 
     # Initial discovery if enabled
     if config_data.get(CONF_DISCOVERY_ENABLED, True):

@@ -11,6 +11,14 @@
 escpos_printer:
   discovery_enabled: true
   discovery_timeout: 5
+  # Manually add printers (optional)
+  printers:
+    - name: "Kitchen Printer"
+      host: "192.168.1.100"
+      port: 9100
+    - name: "Office Printer"
+      host: "192.168.1.101"
+      port: 9100
 
 # Example automations using the integration services
 automation:
@@ -87,4 +95,20 @@ script:
   discover_printers:
     alias: "Discover Printers"
     sequence:
-      - service: escpos_printer.discover_printers 
+      - service: escpos_printer.discover_printers
+
+  add_kitchen_printer:
+    alias: "Add Kitchen Printer"
+    sequence:
+      - service: escpos_printer.add_printer
+        data:
+          name: "Kitchen Printer"
+          host: "192.168.1.100"
+          port: 9100
+
+  remove_printer:
+    alias: "Remove Printer"
+    sequence:
+      - service: escpos_printer.remove_printer
+        data:
+          name: "Old Printer" 

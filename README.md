@@ -44,18 +44,44 @@ escpos_printer:
   discovery_timeout: 5
 ```
 
+### Manual Printer Configuration
+
+You can manually add printers in your configuration:
+
+```yaml
+escpos_printer:
+  discovery_enabled: true
+  discovery_timeout: 5
+  printers:
+    - name: "Kitchen Printer"
+      host: "192.168.1.100"
+      port: 9100
+    - name: "Office Printer"
+      host: "192.168.1.101"
+      port: 9100
+```
+
 ### Configuration Options
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
 | `discovery_enabled` | boolean | `true` | Enable automatic printer discovery on startup |
 | `discovery_timeout` | integer | `5` | Timeout for printer discovery in seconds |
+| `printers` | list | `[]` | List of manually configured printers |
+
+### Printer Configuration
+
+| Option | Type | Required | Description |
+|--------|------|----------|-------------|
+| `name` | string | yes | Name for the printer |
+| `host` | string | yes | IP address or hostname of the printer |
+| `port` | integer | no | Port number (default: 9100) |
 
 ## Usage
 
 ### Services
 
-The integration provides three services:
+The integration provides five services:
 
 #### Print Text
 
@@ -83,13 +109,31 @@ service: escpos_printer.discover_printers
 data: {}
 ```
 
+#### Add Printer
+
+```yaml
+service: escpos_printer.add_printer
+data:
+  name: "New Printer"
+  host: "192.168.1.102"
+  port: 9100
+```
+
+#### Remove Printer
+
+```yaml
+service: escpos_printer.remove_printer
+data:
+  name: "Old Printer"
+```
+
 ### Adding Printers
 
-Printers are added programmatically through the integration. You can:
+You can add printers in three ways:
 
-1. Use the discovery service to find printers on your network
-2. Add printers manually by calling the service with printer details
-3. Check the Home Assistant logs for discovered printers
+1. **Configuration File**: Add printers to your `configuration.yaml` (see above)
+2. **Discovery Service**: Use the `discover_printers` service to find printers on your network
+3. **Add Printer Service**: Use the `add_printer` service to add printers dynamically
 
 ## Examples
 
@@ -165,6 +209,32 @@ script:
     alias: "Discover Printers"
     sequence:
       - service: escpos_printer.discover_printers
+```
+
+### Add printer dynamically
+
+```yaml
+script:
+  add_kitchen_printer:
+    alias: "Add Kitchen Printer"
+    sequence:
+      - service: escpos_printer.add_printer
+        data:
+          name: "Kitchen Printer"
+          host: "192.168.1.100"
+          port: 9100
+```
+
+### Remove printer
+
+```yaml
+script:
+  remove_printer:
+    alias: "Remove Printer"
+    sequence:
+      - service: escpos_printer.remove_printer
+        data:
+          name: "Old Printer"
 ```
 
 ## Troubleshooting
