@@ -1,9 +1,9 @@
 {
   "domain": "escpos_printer",
   "name": "ESC/POS Printer",
-  "documentation": "https://github.com/yourusername/escpos-printer",
+  "documentation": "https://github.com/domstarkey/esc_pos_printer",
   "dependencies": [],
-  "codeowners": ["@yourusername"],
+  "codeowners": ["@domstarkey"],
   "requirements": ["python-escpos==3.1"],
   "version": "1.0.0",
   "config_flow": false,
