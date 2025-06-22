@@ -1,5 +1,8 @@
 # Home Assistant ESC/POS Printer Integration
 
+[![hacs_badge](https://img.shields.io/badge/HACS-Custom-orange.svg)](https://github.com/custom-components/hacs)
+[![maintainer](https://img.shields.io/badge/maintainer-%40domstarkey-blue.svg)](https://github.com/domstarkey)
+
 A Home Assistant integration that provides printer discovery and text printing services for ESC/POS compatible network printers.
 
 ## Features
@@ -12,18 +15,21 @@ A Home Assistant integration that provides printer discovery and text printing s
 
 ## Installation
 
-### Method 1: Manual Installation
+### Method 1: HACS (Recommended)
+
+1. Make sure you have [HACS](https://hacs.xyz/) installed
+2. Add this repository as a custom repository in HACS:
+   - Repository: `domstarkey/esc_pos_printer`
+   - Category: Integration
+3. Click "Download" in HACS
+4. Restart Home Assistant
+5. Add the configuration to your `configuration.yaml`
+
+### Method 2: Manual Installation
 
 1. Download this repository
 2. Copy the `custom_components/escpos_printer` folder to your Home Assistant `config/custom_components/` directory
 3. Restart Home Assistant
-4. Add the integration to your `configuration.yaml`
-
-### Method 2: HACS (Home Assistant Community Store)
-
-1. Install HACS if you haven't already
-2. Add this repository as a custom repository in HACS
-3. Install the integration through HACS
 4. Add the integration to your `configuration.yaml`
 
 ## Configuration

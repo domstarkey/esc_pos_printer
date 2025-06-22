@@ -1,0 +1,7 @@
+{
+  "name": "ESC/POS Printer",
+  "render_readme": true,
+  "domains": ["escpos_printer"],
+  "homeassistant": "2023.8.0",
+  "iot_class": "Local Push"
+} 
