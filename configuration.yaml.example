@@ -1,0 +1,90 @@
+# Example Home Assistant configuration for ESC/POS Printer Integration
+# Add this to your configuration.yaml file
+
+# Example service call for testing (uncomment to use in Developer Tools > Services)
+# escpos_printer.print_text:
+#   printer: "Kitchen Printer"
+#   text: "Hello from Home Assistant!"
+#   headline: "Test Print"
+
+# ESC/POS Printer integration configuration
+escpos_printer:
+  discovery_enabled: true
+  discovery_timeout: 5
+
+# Example automations using the integration services
+automation:
+  # Print daily message at 8 AM
+  - alias: "Print Daily Message"
+    trigger:
+      platform: time
+      at: "08:00:00"
+    action:
+      - service: escpos_printer.print_text
+        data:
+          printer: "Kitchen Printer"
+          headline: "Good Morning!"
+          text: "Today is {{ now().strftime('%A, %B %d, %Y') }}"
+
+  # Print when motion is detected
+  - alias: "Print Motion Alert"
+    trigger:
+      platform: state
+      entity_id: binary_sensor.motion_sensor
+      to: "on"
+    action:
+      - service: escpos_printer.print_text
+        data:
+          printer: "Office Printer"
+          headline: "Motion Detected"
+          text: "Motion detected at {{ now().strftime('%H:%M:%S') }}"
+
+  # Print temperature report at noon
+  - alias: "Print Temperature Report"
+    trigger:
+      platform: time
+      at: "12:00:00"
+    action:
+      - service: escpos_printer.print_text
+        data:
+          printer: "Kitchen Printer"
+          headline: "Temperature Report"
+          text: |
+            Living Room: {{ states('sensor.living_room_temperature') }}°C
+            Bedroom: {{ states('sensor.bedroom_temperature') }}°C
+            Kitchen: {{ states('sensor.kitchen_temperature') }}°C
+
+# Example scripts
+script:
+  print_weather:
+    alias: "Print Weather Report"
+    sequence:
+      - service: escpos_printer.print_text
+        data:
+          printer: "Kitchen Printer"
+          headline: "Weather Report"
+          text: |
+            Current: {{ states('sensor.weather_temperature') }}°C
+            Humidity: {{ states('sensor.weather_humidity') }}%
+            Condition: {{ states('sensor.weather_condition') }}
+
+  print_shopping_list:
+    alias: "Print Shopping List"
+    sequence:
+      - service: escpos_printer.print_text
+        data:
+          printer: "Kitchen Printer"
+          headline: "Shopping List"
+          text: "{{ states('input_text.shopping_list') }}"
+
+  print_simple_message:
+    alias: "Print Simple Message"
+    sequence:
+      - service: escpos_printer.print_simple
+        data:
+          text: "Hello from Home Assistant!"
+
+  discover_printers:
+    alias: "Discover Printers"
+    sequence:
+      - service: escpos_printer.discover_printers 

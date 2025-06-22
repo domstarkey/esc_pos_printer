@@ -1,0 +1,52 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "data": {
+          "discovery_enabled": "Enable automatic printer discovery",
+          "discovery_timeout": "Discovery timeout (seconds)"
+        },
+        "description": "Configure ESC/POS Printer integration",
+        "title": "ESC/POS Printer"
+      }
+    }
+  },
+  "services": {
+    "print_text": {
+      "name": "Print Text",
+      "description": "Print text to an ESC/POS printer",
+      "fields": {
+        "printer": {
+          "name": "Printer Name",
+          "description": "Name of the printer to use"
+        },
+        "text": {
+          "name": "Text",
+          "description": "Text to print"
+        },
+        "headline": {
+          "name": "Headline",
+          "description": "Optional headline to print above the text"
+        }
+      }
+    },
+    "print_simple": {
+      "name": "Print Simple Text",
+      "description": "Print simple text to the default or specified printer",
+      "fields": {
+        "text": {
+          "name": "Text",
+          "description": "Text to print"
+        },
+        "printer": {
+          "name": "Printer Name",
+          "description": "Name of the printer to use (optional, uses default if not specified)"
+        }
+      }
+    },
+    "discover_printers": {
+      "name": "Discover Printers",
+      "description": "Scan the network for ESC/POS printers"
+    }
+  }
+} 

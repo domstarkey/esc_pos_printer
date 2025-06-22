@@ -1,0 +1,44 @@
+print_text:
+  name: Print Text
+  description: Print text to an ESC/POS printer
+  fields:
+    printer:
+      name: Printer Name
+      description: Name of the printer to use
+      required: true
+      selector:
+        text:
+    text:
+      name: Text
+      description: Text to print
+      required: true
+      selector:
+        text:
+    headline:
+      name: Headline
+      description: Optional headline to print above the text
+      required: false
+      selector:
+        text:
+
+print_simple:
+  name: Print Simple Text
+  description: Print simple text to the default or specified printer
+  fields:
+    text:
+      name: Text
+      description: Text to print
+      required: true
+      selector:
+        text:
+    printer:
+      name: Printer Name
+      description: Name of the printer to use (optional, uses default if not specified)
+      required: false
+      selector:
+        text:
+
+discover_printers:
+  name: Discover Printers
+  description: Scan the network for ESC/POS printers
+  fields: {} 
